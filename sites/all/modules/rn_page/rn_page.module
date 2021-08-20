@@ -1,0 +1,74 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function rn_page_menu() {
+  $items['drupal-test-task'] = array(
+    'title' => 'Task',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rn_page_tables_page'),
+    'access callback' => TRUE,
+  );
+
+  return $items;
+}
+/**
+ * Implements hook_theme().
+ */
+function rn_page_theme() {
+  return array(
+    'users' => array(
+      'render element' => 'form',
+      'file' => 'rn_page.theme.inc',
+    ),
+  );
+}
+
+function rn_page_get_all_users() {
+  return db_select('users', 'u')
+    ->extend('PagerDefault') //Databse API
+    ->fields('u', array('uid', 'name'))
+    ->limit(50)
+    ->execute() //?
+    ->fetchAllAssoc('uid'); //возвращает ассоциативный массив с ключами uid
+}
+
+/**
+ * Example tables page.
+ */
+function rn_page_tables_page() {
+
+  $header = array(
+    array('data' => t('id'), 'field' => 'u.id'),
+    array('data' => t('Type'), 'field' => 'u.name'),
+    t('Action'),
+  );
+
+  $users = rn_page_get_all_users();
+  $form['user_table'] = array( //Form API ?
+    '#type'  => 'container',
+    '#theme' => 'users',
+    '#header' => $header,
+  );
+
+  foreach ($users as $uid => $user) {
+
+    $form['user_table'][$uid]['id'] = array(
+      '#markup' => $user->uid,
+    );
+
+    $form['user_table'][$uid]['name'] = array(
+      '#markup' => $user->name,
+    );
+
+    $form['user_table'][$uid]['link'] = array(
+      '#type' => 'link',
+      '#title' => t('Edit'),
+      '#href' => 'user/' . $uid . '/edit',
+    );
+
+    $form['pager']['#markup'] = theme('pager');
+  }
+
+    return $form;
+}
