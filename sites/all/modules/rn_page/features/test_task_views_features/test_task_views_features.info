@@ -1,0 +1,16 @@
+name = test_task_views_features
+description = Это тестовая фича
+core = 7.x
+package = Features
+version = 7.x-1.0
+dependencies[] = features
+dependencies[] = locale
+dependencies[] = menu
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[language][] = ru
+features[menu_custom][] = navigation
+features[views_view][] = drupal_test_task_views_
+features_exclude[dependencies][ctools] = ctools
+project path = sites/all/modules/rn_page/features
