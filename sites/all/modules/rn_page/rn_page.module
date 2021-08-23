@@ -3,34 +3,35 @@
  * Implements hook_menu().
  */
 function rn_page_menu() {
-  $items['drupal-test-task'] = array(
+  $items['drupal-test-task'] = [
     'title' => 'Task',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('rn_page_tables_page'),
+    'page callback' => 'drupal_get_form', //возвращает подготовленную к рендеру форму
+    'page arguments' => ['rn_page_tables_page'],
     'access callback' => TRUE,
-  );
+  ];
 
   return $items;
 }
+
 /**
  * Implements hook_theme().
  */
 function rn_page_theme() {
-  return array(
-    'users' => array(
+  return [
+    'users' => [
       'render element' => 'form',
       'file' => 'rn_page.theme.inc',
-    ),
-  );
+    ],
+  ];
 }
 
 function rn_page_get_all_users() {
   return db_select('users', 'u')
-    ->extend('PagerDefault') //Databse API
-    ->fields('u', array('uid', 'name'))
-    ->limit(50)
-    ->execute() //?
-    ->fetchAllAssoc('uid'); //возвращает ассоциативный массив с ключами uid
+    ->extend('PagerDefault') //Databse  API  https://www.drupal.org/node/508796
+    ->fields('u', ['uid', 'name'])
+    ->range(0, 50) //вместо лимит
+    ->execute() //? выполняет запрос
+    ->fetchAllAssoc('uid'); //возвращает ассоциативный массив с ключами uid https://api.drupal.org/api/drupal/includes%21database%21database.inc/interface/DatabaseStatementInterface/7.x
 }
 
 /**
@@ -38,37 +39,37 @@ function rn_page_get_all_users() {
  */
 function rn_page_tables_page() {
 
-  $header = array(
-    array('data' => t('id'), 'field' => 'u.id'),
-    array('data' => t('Type'), 'field' => 'u.name'),
+  $header = [
+    ['data' => t('id'), 'field' => 'u.id'],
+    ['data' => t('Type'), 'field' => 'u.name'],
     t('Action'),
-  );
+  ];
 
   $users = rn_page_get_all_users();
-  $form['user_table'] = array( //Form API ?
-    '#type'  => 'container',
+  $form['user_table'] = [ //Form API ?
+    '#type' => 'container',
     '#theme' => 'users',
     '#header' => $header,
-  );
+  ];
 
   foreach ($users as $uid => $user) {
 
-    $form['user_table'][$uid]['id'] = array(
+    $form['user_table'][$uid]['id'] = [
       '#markup' => $user->uid,
-    );
+    ];
 
-    $form['user_table'][$uid]['name'] = array(
+    $form['user_table'][$uid]['name'] = [
       '#markup' => $user->name,
-    );
+    ];
 
-    $form['user_table'][$uid]['link'] = array(
+    $form['user_table'][$uid]['link'] = [
       '#type' => 'link',
       '#title' => t('Edit'),
       '#href' => 'user/' . $uid . '/edit',
-    );
+    ];
 
     $form['pager']['#markup'] = theme('pager');
   }
 
-    return $form;
+  return $form;
 }
