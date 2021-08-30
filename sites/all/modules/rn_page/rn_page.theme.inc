@@ -6,7 +6,7 @@ function theme_users($vars) {
   $form = $vars['form'];
   $rows = [];
   foreach (element_children($form) as $id) { //?
-    if (isset($form[$id])) {
+    if (array_key_exists($id, $form)) {
       $rows[] = [
         'data' => [
           drupal_render($form[$id]['id']), //?

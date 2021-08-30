@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * implements hook_schema()
+ */
+function personal_information_schema() {
+  $schema['personal_information'] = [
+    'fields' => [
+      'pid' => [
+        'description' => 'Information ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'phone' => [
+        'description' => 'User phone number',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'user_name' => [
+        'description' => 'User name',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'surname' => [
+        'description' => 'User surname',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'user_id' => [
+        'description' => 'User id.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'foreign keys' => [
+      'user_id' => [
+        'table' => 'users',
+        'columns' => ['user_id' => 'uid'],
+        'on delete' => 'replace',
+      ],
+    ],
+    'indexes' => [
+      'user_id' => ['user_id'],
+    ],
+    'primary key' => ['pid'],
+  ];
+  return $schema;
+}

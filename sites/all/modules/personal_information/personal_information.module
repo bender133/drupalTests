@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * Implements hook_entity_info()
+ */
+function personal_information_entity_info() {
+  return [
+    'personal_information' => [
+      'label' => t('Personal Information'),
+      'controller class' => 'EntityAPIController',
+      'entity class' => 'Entity',
+      'base table' => 'personal_information',
+      'entity keys' => [
+        'id' => 'pid',
+      ],
+//      'relationships' => [
+//        'label' => t('Users'),
+//        'base' => 'users',
+//        'base field' => 'user_id',
+//        'relationship field' =>'uid',
+//      ],
+      'module' => 'personal_information',
+    ],
+  ];
+}
+
+function personal_information_load($pid) {
+  $result = entity_load('personal_information', [$pid]);
+  return $result ? reset($result) : FALSE;
+}
+
+function personal_information_pid($uid) {
+  $result = db_select('personal_information', 'n')
+    ->fields('n', ['pid'])
+    ->condition('n.user_id', $uid)
+    ->execute()
+    ->fetchColumn();
+  return $result;
+}
+
+/**
+ * Implements hook_form_alter()
+ */
+function personal_information_form_user_profile_form_alter(&$form) {
+  $personal_information_entity = FALSE;
+  $user = $form['#user'];
+  if ($pid = personal_information_pid($user->uid)) {
+    $personal_information_entity = personal_information_load($pid);
+  }
+
+
+  $form['personal_information']['phone'] = [
+    '#type' => 'textfield',
+    '#title' => t('Phone number'),
+    '#default_value' => $personal_information_entity->phone ?? '',
+  ];
+  $form['personal_information']['user_name'] = [
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#default_value' => $personal_information_entity->user_id ?? '',
+  ];
+  $form['personal_information']['surname'] = [
+    '#type' => 'textfield',
+    '#title' => t('Surname'),
+    '#default_value' => $personal_information_entity->surname ?? '',
+  ];
+
+  $form['actions']['submit']['#submit'][] = 'custom_personal_information_update';
+
+}
+
+function custom_personal_information_update ($form,  &$form_state) {
+  $user = $form['#user'];
+  $personal_information_form_data = $form['personal_information'];
+  $pid = personal_information_pid($user->uid);
+  $personal_information_entity = personal_information_load($pid);
+  if (!$personal_information_entity) {
+    $personal_information_entity = entity_create('personal_information', []);
+  }
+  $personal_information_entity->user_name = trim(htmlspecialchars($personal_information_form_data['user_name']['#value']));
+  $personal_information_entity->surname = trim(htmlspecialchars($personal_information_form_data['surname']['#value']));
+  $personal_information_entity->phone = trim(htmlspecialchars($personal_information_form_data['phone']['#value']));
+  $personal_information_entity->user_id = $user->uid;
+  $personal_information_entity->save();
+}
