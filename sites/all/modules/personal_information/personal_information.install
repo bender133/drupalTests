@@ -30,7 +30,7 @@ function personal_information_schema() {
         'length' => 100,
         'not null' => TRUE,
       ],
-      'user_id' => [
+      'user_id' => [ //fix
         'description' => 'User id.',
         'type' => 'int',
         'not null' => TRUE,
@@ -41,13 +41,20 @@ function personal_information_schema() {
       'user_id' => [
         'table' => 'users',
         'columns' => ['user_id' => 'uid'],
-        'on delete' => 'replace',
+        'on delete' => 'replace',//fix
       ],
     ],
     'indexes' => [
-      'user_id' => ['user_id'],
+      'user_id' => ['user_id'], //sql индексы
     ],
     'primary key' => ['pid'],
   ];
   return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function personal_information_uninstall() {
+  db_drop_table('personal_information');
 }

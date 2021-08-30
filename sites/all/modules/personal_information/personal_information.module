@@ -13,12 +13,6 @@ function personal_information_entity_info() {
       'entity keys' => [
         'id' => 'pid',
       ],
-//      'relationships' => [
-//        'label' => t('Users'),
-//        'base' => 'users',
-//        'base field' => 'user_id',
-//        'relationship field' =>'uid',
-//      ],
       'module' => 'personal_information',
     ],
   ];
@@ -65,11 +59,11 @@ function personal_information_form_user_profile_form_alter(&$form) {
     '#default_value' => $personal_information_entity->surname ?? '',
   ];
 
-  $form['actions']['submit']['#submit'][] = 'custom_personal_information_update';
+  $form['actions']['submit']['#submit'][] = 'custom_personal_information_update';//как альтерить сабмит
 
 }
 
-function custom_personal_information_update ($form,  &$form_state) {
+function custom_personal_information_update ($form,  &$form_state) {//form & form state
   $user = $form['#user'];
   $personal_information_form_data = $form['personal_information'];
   $pid = personal_information_pid($user->uid);
@@ -82,4 +76,31 @@ function custom_personal_information_update ($form,  &$form_state) {
   $personal_information_entity->phone = trim(htmlspecialchars($personal_information_form_data['phone']['#value']));
   $personal_information_entity->user_id = $user->uid;
   $personal_information_entity->save();
+}
+
+//hook_entity_info_alter()
+//hook_views_data_alter()
+function personal_information_entity_info_alter (&$data) {// personal with user
+  $test = 1;
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function personal_information_views_data_alter(&$data) { // user with personal
+  $test = 1;
+  $data['personal_information']['user_id']['relationship'] = [
+    'label' => t('User'),
+    'base' => 'users',
+    'base field' => 'uid',
+    'relationship field' => 'user_id',
+  ];
+
+  $data['users']['uid']['relationship'] = [
+    'label' => t('Personal information'),
+    'base' => 'personal_information',
+    'base field' => 'user_id',
+    'relationship field' => 'uid',
+  ];
+
 }

@@ -33,6 +33,62 @@ function test_task_views_features_views_default_views() {
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '50';
   $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'uid' => 'uid',
+    'name' => 'name',
+    'user_name' => 'user_name',
+    'surname' => 'surname',
+    'phone' => 'phone',
+    'edit_node' => 'edit_node',
+  );
+  $handler->display->display_options['style_options']['class'] = '';
+  $handler->display->display_options['style_options']['default'] = 'uid';
+  $handler->display->display_options['style_options']['info'] = array(
+    'uid' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'name' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'user_name' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'surname' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'phone' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'edit_node' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+  );
+  /* Relationship: User: Uid */
+  $handler->display->display_options['relationships']['uid']['id'] = 'uid';
+  $handler->display->display_options['relationships']['uid']['table'] = 'users';
+  $handler->display->display_options['relationships']['uid']['field'] = 'uid';
   /* Field: User: Uid */
   $handler->display->display_options['fields']['uid']['id'] = 'uid';
   $handler->display->display_options['fields']['uid']['table'] = 'users';
@@ -46,6 +102,20 @@ function test_task_views_features_views_default_views() {
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['label'] = 'Имя пользователя';
   $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
+  /* Field: Personal Information: User_name */
+  $handler->display->display_options['fields']['user_name']['id'] = 'user_name';
+  $handler->display->display_options['fields']['user_name']['table'] = 'personal_information';
+  $handler->display->display_options['fields']['user_name']['field'] = 'user_name';
+  /* Field: Personal Information: Surname */
+  $handler->display->display_options['fields']['surname']['id'] = 'surname';
+  $handler->display->display_options['fields']['surname']['table'] = 'personal_information';
+  $handler->display->display_options['fields']['surname']['field'] = 'surname';
+  $handler->display->display_options['fields']['surname']['relationship'] = 'uid';
+  /* Field: Personal Information: Phone */
+  $handler->display->display_options['fields']['phone']['id'] = 'phone';
+  $handler->display->display_options['fields']['phone']['table'] = 'personal_information';
+  $handler->display->display_options['fields']['phone']['field'] = 'phone';
+  $handler->display->display_options['fields']['phone']['relationship'] = 'uid';
   /* Field: User: Link to edit user */
   $handler->display->display_options['fields']['edit_node']['id'] = 'edit_node';
   $handler->display->display_options['fields']['edit_node']['table'] = 'users';
@@ -75,8 +145,12 @@ function test_task_views_features_views_default_views() {
     t('‹ previous'),
     t('next ›'),
     t('last »'),
+    t('Personal information'),
     t('Идентификатор'),
     t('Имя пользователя'),
+    t('User_name'),
+    t('Surname'),
+    t('Phone'),
     t('Действие'),
     t('Редактировать'),
     t('Page'),

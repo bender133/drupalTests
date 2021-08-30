@@ -2,5 +2,7 @@
 
 /**
  * @file
- * Drupal needs this blank file.
+ * Code for the T2 feature.
  */
+
+include_once 't2.features.inc';
