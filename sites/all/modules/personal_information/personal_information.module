@@ -18,45 +18,59 @@ function personal_information_entity_info() {
   ];
 }
 
-function personal_information_load($pid) {
-  $result = entity_load('personal_information', [$pid]);
-  return $result ? reset($result) : FALSE;
+/**
+ * @param $pid
+ * @param array $conditions
+ *
+ * @return \Entity|null
+ */
+function personal_information_load($pid, array $conditions): ?Entity {
+  $result = entity_load('personal_information', $pid, $conditions);
+  $personal_information_entity = reset($result);
+  return $result ? $personal_information_entity : NULL;
 }
 
+/**
+ * @param $uid
+ *
+ * @return null
+ */
 function personal_information_pid($uid) {
+
   $result = db_select('personal_information', 'n')
     ->fields('n', ['pid'])
     ->condition('n.user_id', $uid)
     ->execute()
     ->fetchColumn();
-  return $result;
+  if ($result === FALSE) {
+    return NULL;
+  }
+
+  return $result ;
 }
 
 /**
  * Implements hook_form_alter()
  */
 function personal_information_form_user_profile_form_alter(&$form) {
-  $personal_information_entity = FALSE;
   $user = $form['#user'];
-  if ($pid = personal_information_pid($user->uid)) {
-    $personal_information_entity = personal_information_load($pid);
-  }
+  $personal_information_entity = personal_information_load(FALSE ,['user_id' => $user->uid]);
 
 
   $form['personal_information']['phone'] = [
     '#type' => 'textfield',
     '#title' => t('Phone number'),
-    '#default_value' => $personal_information_entity->phone ?? '',
+    '#default_value' => $personal_information_entity === NULL ? '' : $personal_information_entity->phone ,
   ];
   $form['personal_information']['user_name'] = [
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => $personal_information_entity->user_id ?? '',
+    '#default_value' => $personal_information_entity === NULL ? '' : $personal_information_entity->user_name ,
   ];
   $form['personal_information']['surname'] = [
     '#type' => 'textfield',
     '#title' => t('Surname'),
-    '#default_value' => $personal_information_entity->surname ?? '',
+    '#default_value' => $personal_information_entity === NULL ? '' : $personal_information_entity->surname ,
   ];
 
   $form['actions']['submit']['#submit'][] = 'custom_personal_information_update';//как альтерить сабмит
@@ -67,10 +81,13 @@ function custom_personal_information_update ($form,  &$form_state) {//form & for
   $user = $form['#user'];
   $personal_information_form_data = $form['personal_information'];
   $pid = personal_information_pid($user->uid);
+
   $personal_information_entity = personal_information_load($pid);
-  if (!$personal_information_entity) {
+  if ($personal_information_entity === NULL) {
     $personal_information_entity = entity_create('personal_information', []);
   }
+
+
   $personal_information_entity->user_name = trim(htmlspecialchars($personal_information_form_data['user_name']['#value']));
   $personal_information_entity->surname = trim(htmlspecialchars($personal_information_form_data['surname']['#value']));
   $personal_information_entity->phone = trim(htmlspecialchars($personal_information_form_data['phone']['#value']));
