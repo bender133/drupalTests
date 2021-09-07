@@ -30,22 +30,22 @@ function personal_information_schema() {
         'length' => 100,
         'not null' => TRUE,
       ],
-      'user_id' => [ //fix
+      'user_id' => [
         'description' => 'User id.',
         'type' => 'int',
         'not null' => TRUE,
-        'default' => 0,
+        'unsigned' => TRUE,
       ],
     ],
     'foreign keys' => [
       'user_id' => [
         'table' => 'users',
         'columns' => ['user_id' => 'uid'],
-        'on delete' => 'replace',//fix
+        'on delete' => 'replace',
       ],
     ],
     'indexes' => [
-      'user_id' => ['user_id'], //sql индексы
+      'user_id' => ['user_id'],
     ],
     'primary key' => ['pid'],
   ];

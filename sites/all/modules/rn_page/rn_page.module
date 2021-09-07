@@ -1,15 +1,14 @@
-  <?php
+<?php
 /**
  * Implements hook_menu().
  */
 function rn_page_menu() {
   $items['drupal-test-task'] = [
     'title' => 'Task',
-    'page callback' => 'drupal_get_form', //возвращает подготовленную к рендеру форму
+    'page callback' => 'drupal_get_form',
     'page arguments' => ['rn_page_tables_page'],
     'access callback' => TRUE,
   ];
-
   return $items;
 }
 
@@ -27,11 +26,11 @@ function rn_page_theme() {
 
 function rn_page_get_all_users() {
   return db_select('users', 'u')
-    ->extend('PagerDefault') //Databse  API  https://www.drupal.org/node/508796
+    ->extend('PagerDefault')
     ->fields('u', ['uid', 'name'])
-    ->range(0, 50) //вместо лимит
-    ->execute() //? выполняет запрос
-    ->fetchAllAssoc('uid'); //возвращает ассоциативный массив с ключами uid https://api.drupal.org/api/drupal/includes%21database%21database.inc/interface/DatabaseStatementInterface/7.x
+    ->range(0, 50)
+    ->execute()
+    ->fetchAllAssoc('uid');
 }
 
 /**
@@ -46,7 +45,7 @@ function rn_page_tables_page() {
   ];
 
   $users = rn_page_get_all_users();
-  $form['user_table'] = [ //Form API ?
+  $form['user_table'] = [
     '#type' => 'container',
     '#theme' => 'users',
     '#header' => $header,
@@ -70,6 +69,5 @@ function rn_page_tables_page() {
 
     $form['pager']['#markup'] = theme('pager');
   }
-
   return $form;
 }

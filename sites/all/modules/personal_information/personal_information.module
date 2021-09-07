@@ -18,83 +18,81 @@ function personal_information_entity_info() {
   ];
 }
 
-function personal_information_load($pid) {
-  $result = entity_load('personal_information', [$pid]);
-  return $result ? reset($result) : FALSE;
-}
-
-function personal_information_pid($uid) {
-  $result = db_select('personal_information', 'n')
-    ->fields('n', ['pid'])
-    ->condition('n.user_id', $uid)
-    ->execute()
-    ->fetchColumn();
-  return $result;
+/**
+ * @param $pid
+ * @param array $conditions
+ *
+ * @return \Entity|null
+ */
+function personalInformationLoad($uid, array $conditions): ?Entity {
+  $result = entity_load('personal_information', $uid, $conditions);
+  $personalInformationEntity = reset($result);
+  return $result ? $personalInformationEntity : NULL;
 }
 
 /**
  * Implements hook_form_alter()
  */
 function personal_information_form_user_profile_form_alter(&$form) {
-  $personal_information_entity = FALSE;
   $user = $form['#user'];
-  if ($pid = personal_information_pid($user->uid)) {
-    $personal_information_entity = personal_information_load($pid);
-  }
+  $personalInformationEntity = personalInformationLoad(FALSE, ['user_id' => $user->uid]);
 
 
   $form['personal_information']['phone'] = [
     '#type' => 'textfield',
     '#title' => t('Phone number'),
-    '#default_value' => $personal_information_entity->phone ?? '',
+    '#default_value' => $personalInformationEntity === NULL ? '' : $personalInformationEntity->phone,
   ];
   $form['personal_information']['user_name'] = [
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => $personal_information_entity->user_id ?? '',
+    '#default_value' => $personalInformationEntity === NULL ? '' : $personalInformationEntity->user_name,
   ];
   $form['personal_information']['surname'] = [
     '#type' => 'textfield',
     '#title' => t('Surname'),
-    '#default_value' => $personal_information_entity->surname ?? '',
+    '#default_value' => $personalInformationEntity === NULL ? '' : $personalInformationEntity->surname,
   ];
 
-  $form['actions']['submit']['#submit'][] = 'custom_personal_information_update';//как альтерить сабмит
+  $form['actions']['submit']['#submit'][] = 'customPersonalInformationUpdate';
 
 }
 
-function custom_personal_information_update ($form,  &$form_state) {//form & form state
-  $user = $form['#user'];
-  $personal_information_form_data = $form['personal_information'];
-  $pid = personal_information_pid($user->uid);
-  $personal_information_entity = personal_information_load($pid);
-  if (!$personal_information_entity) {
-    $personal_information_entity = entity_create('personal_information', []);
+/**
+ * @param $form
+ * @param $form_state
+ */
+function customPersonalInformationUpdate($form, &$form_state) {
+  $user = $form_state['user'];
+  $personalInformationFormData = $form_state['values'];
+
+  $personalInformationEntity = personalInformationLoad(FALSE, ['user_id' => $user->uid]);
+  if ($personalInformationEntity === NULL) {
+    $personalInformationEntity = entity_create('personal_information', []);
   }
-  $personal_information_entity->user_name = trim(htmlspecialchars($personal_information_form_data['user_name']['#value']));
-  $personal_information_entity->surname = trim(htmlspecialchars($personal_information_form_data['surname']['#value']));
-  $personal_information_entity->phone = trim(htmlspecialchars($personal_information_form_data['phone']['#value']));
-  $personal_information_entity->user_id = $user->uid;
-  $personal_information_entity->save();
+
+  $personalInformationEntity->user_name = trim(htmlspecialchars($personalInformationFormData['user_name']));
+  $personalInformationEntity->surname = trim(htmlspecialchars($personalInformationFormData['surname'] ));
+  $personalInformationEntity->phone = trim(htmlspecialchars($personalInformationFormData['phone']));
+  $personalInformationEntity->user_id = $user->uid;
+  $personalInformationEntity->save();
 }
 
-//hook_entity_info_alter()
-//hook_views_data_alter()
-function personal_information_entity_info_alter (&$data) {// personal with user
-  $test = 1;
+/**
+ * Implements hook_entity_property_info_alter().
+ */
+function personal_information_entity_property_info_alter(&$info) {
+
+  $properties = &$info['personal_information']['properties'];
+  $properties['user_id']['label'] = t('Personal Information');
+  $properties['user_id']['type'] = 'user';
+  $properties['user_id']['description'] = t('Reference to ERP Country entity.');
 }
 
 /**
  * Implements hook_views_data_alter().
  */
-function personal_information_views_data_alter(&$data) { // user with personal
-  $test = 1;
-  $data['personal_information']['user_id']['relationship'] = [
-    'label' => t('User'),
-    'base' => 'users',
-    'base field' => 'uid',
-    'relationship field' => 'user_id',
-  ];
+function personal_information_views_data_alter(&$data) {
 
   $data['users']['uid']['relationship'] = [
     'label' => t('Personal information'),
@@ -102,5 +100,4 @@ function personal_information_views_data_alter(&$data) { // user with personal
     'base field' => 'user_id',
     'relationship field' => 'uid',
   ];
-
 }

@@ -85,10 +85,10 @@ function test_task_views_features_views_default_views() {
       'empty_column' => 0,
     ),
   );
-  /* Relationship: User: Uid */
-  $handler->display->display_options['relationships']['uid']['id'] = 'uid';
-  $handler->display->display_options['relationships']['uid']['table'] = 'users';
-  $handler->display->display_options['relationships']['uid']['field'] = 'uid';
+  /* Relationship: User: Personal Information */
+  $handler->display->display_options['relationships']['personal_information']['id'] = 'personal_information';
+  $handler->display->display_options['relationships']['personal_information']['table'] = 'users';
+  $handler->display->display_options['relationships']['personal_information']['field'] = 'personal_information';
   /* Field: User: Uid */
   $handler->display->display_options['fields']['uid']['id'] = 'uid';
   $handler->display->display_options['fields']['uid']['table'] = 'users';
@@ -110,12 +110,12 @@ function test_task_views_features_views_default_views() {
   $handler->display->display_options['fields']['surname']['id'] = 'surname';
   $handler->display->display_options['fields']['surname']['table'] = 'personal_information';
   $handler->display->display_options['fields']['surname']['field'] = 'surname';
-  $handler->display->display_options['fields']['surname']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['surname']['relationship'] = 'personal_information';
   /* Field: Personal Information: Phone */
   $handler->display->display_options['fields']['phone']['id'] = 'phone';
   $handler->display->display_options['fields']['phone']['table'] = 'personal_information';
   $handler->display->display_options['fields']['phone']['field'] = 'phone';
-  $handler->display->display_options['fields']['phone']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['phone']['relationship'] = 'personal_information';
   /* Field: User: Link to edit user */
   $handler->display->display_options['fields']['edit_node']['id'] = 'edit_node';
   $handler->display->display_options['fields']['edit_node']['table'] = 'users';
@@ -145,7 +145,7 @@ function test_task_views_features_views_default_views() {
     t('‹ previous'),
     t('next ›'),
     t('last »'),
-    t('Personal information'),
+    t('Personal Information'),
     t('Идентификатор'),
     t('Имя пользователя'),
     t('User_name'),
