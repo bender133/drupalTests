@@ -86,7 +86,7 @@ function personal_information_entity_property_info_alter(&$info) {
   $properties = &$info['personal_information']['properties'];
   $properties['user_id']['label'] = t('Personal Information');
   $properties['user_id']['type'] = 'user';
-  $properties['user_id']['description'] = t('Reference to ERP Country entity.');
+  $properties['user_id']['description'] = t('Reference to users entity');
 }
 
 /**
